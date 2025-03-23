@@ -1,0 +1,11 @@
+plant-growth-tracker/
+├── index.html         # Main HTML structure
+├── css/
+│   └── style.css      # Stylesheet
+├── js/
+│   ├── app.js         # Main application logic 
+│   ├── camera.js      # Camera functionality
+│   ├── plants.js      # Plant management (CRUD)
+│   ├── phases.js      # Phase management (CRUD)
+│   └── ui.js          # UI rendering and interactions
+└── service-worker.js  # Unchanged service worker
