@@ -39,9 +39,36 @@ function formatDate(dateString) {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
 }
 
+// These functions are defined in other JS files but need to be accessed globally
+// Make sure these are actually defined before referencing them
+// Just defining empty placeholders to prevent errors if loaded out of order
+if (typeof openEditPlantModal === 'undefined') {
+    window.openEditPlantModal = function(plantId) {
+        console.log('openEditPlantModal should be defined in plants-js.js');
+    };
+}
+
+if (typeof openEditPhaseModal === 'undefined') {
+    window.openEditPhaseModal = function(plantId, phaseId) {
+        console.log('openEditPhaseModal should be defined in phases-js.js');
+    };
+}
+
+if (typeof openDeleteModal === 'undefined') {
+    window.openDeleteModal = function(type, id, parentId) {
+        console.log('openDeleteModal should be defined in ui-js.js');
+    };
+}
+
 // Initialize
-renderPlants();
-updatePhasePlantSelect();
+// Make sure these functions are defined in respective files
+if (typeof renderPlants === 'function') {
+    renderPlants();
+}
+
+if (typeof updatePhasePlantSelect === 'function') {
+    updatePhasePlantSelect();
+}
 
 // Service Worker Registration for PWA
 if ('serviceWorker' in navigator) {
@@ -55,8 +82,3 @@ if ('serviceWorker' in navigator) {
             });
     });
 }
-
-// Make functions globally accessible
-window.openEditPlantModal = openEditPlantModal;
-window.openEditPhaseModal = openEditPhaseModal;
-window.openDeleteModal = openDeleteModal;
