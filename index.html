@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Growth Tracker</title>
+    <style>
+        :root {
+            --primary: #388e3c;
+            --secondary: #81c784;
+            --light: #f1f8e9;
+            --dark: #1b5e20;
+            --accent: #ff8f00;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: #333;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: var(--dark);
+        }
+        
+        .btn-accent {
+            background-color: var(--accent);
+        }
+        
+        .btn-accent:hover {
+            background-color: #f57c00;
+        }
+        
+        .camera-container {
+            width: 100%;
+            position: relative;
+        }
+        
+        #video {
+            width: 100%;
+            border-radius: 8px;
+            background-color: #ddd;
+            display: none;
+        }
+        
+        #photo {
+            width: 100%;
+            border-radius: 8px;
+            background-color: #ddd;
+            display: none;
+        }
+        
+        .camera-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        textarea {
+            min-height: 100px;
+        }
+        
+        .plant-list {
+            list-style: none;
+        }
+        
+        .plant-item {
+            border-left: 4px solid var(--secondary);
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .plant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plant-name {
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .phase-badge {
+            background-color: var(--secondary);
+            color: var(--dark);
+            padding: 0.25rem 0.5rem;
+            border-radius: 16px;
+            font-size: 0.9rem;
+        }
+        
+        .phase-entry {
+            display: flex;
+            margin: 1rem 0;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .phase-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .phase-details {
+            flex: 1;
+        }
+        
+        .phase-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+            gap: 0.5rem;
+        }
+        
+        .tab-btn {
+            background-color: #ddd;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Plant Growth Tracker</h1>
+    </header>
+    
+    <main>
+        <div class="tab-buttons">
+            <button class="tab-btn active" data-tab="plants">My Plants</button>
+            <button class="tab-btn" data-tab="add">Add Plant</button>
+            <button class="tab-btn" data-tab="phases">Add Growth Phase</button>
+        </div>
+        
+        <!-- My Plants Tab -->
+        <div id="plants-tab" class="tab-content active">
+            <div class="card">
+                <h2>My Plants</h2>
+                
+                <div id="plants-list" class="plant-list">
+                    <!-- Plants will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Add Plant Tab -->
+        <div id="add-tab" class="tab-content">
+            <div class="card">
+                <h2>Add New Plant</h2>
+                
+                <form id="add-plant-form">
+                    <div class="form-group">
+                        <label for="plant-name">Plant Name</label>
+                        <input type="text" id="plant-name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="plant-species">Species (optional)</label>
+                        <input type="text" id="plant-species">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="plant-description">Description (optional)</label>
+                        <textarea id="plant-description"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Initial Photo (optional)</label>
+                        <div class="camera-container">
+                            <video id="video" autoplay></video>
+                            <canvas id="canvas" style="display:none;"></canvas>
+                            <img id="photo" alt="Captured photo">
+                        </div>
+                        
+                        <div class="camera-controls">
+                            <button type="button" class="btn" id="start-camera">Start Camera</button>
+                            <button type="button" class="btn" id="capture-photo" disabled>Take Photo</button>
+                            <button type="button" class="btn" id="retake-photo" disabled>Retake</button>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-accent">Add Plant</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Add Phase Tab -->
+        <div id="phases-tab" class="tab-content">
+            <div class="card">
+                <h2>Add Growth Phase</h2>
+                
+                <form id="add-phase-form">
+                    <div class="form-group">
+                        <label for="phase-plant">Select Plant</label>
+                        <select id="phase-plant" required>
+                            <option value="">-- Select a plant --</option>
+                            <!-- Plants will be added here dynamically -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phase-name">Phase Name</label>
+                        <input type="text" id="phase-name" required placeholder="e.g., Citric Acid Solution, Germination, Sprouting">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phase-notes">Notes</label>
+                        <textarea id="phase-notes" placeholder="Enter details about this growth phase..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Photo</label>
+                        <div class="camera-container">
+                            <video id="phase-video" autoplay></video>
+                            <canvas id="phase-canvas" style="display:none;"></canvas>
+                            <img id="phase-photo" alt="Captured photo">
+                        </div>
+                        
+                        <div class="camera-controls">
+                            <button type="button" class="btn" id="phase-start-camera">Start Camera</button>
+                            <button type="button" class="btn" id="phase-capture-photo" disabled>Take Photo</button>
+                            <button type="button" class="btn" id="phase-retake-photo" disabled>Retake</button>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-accent">Record Phase</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    
+    <div class="footer">
+        <p>Plant Growth Tracker - Progressive Web App</p>
+    </div>
+    
+    <script>
+        // Store data in local storage
+        let plants = JSON.parse(localStorage.getItem('plants')) || [];
+        
+        // DOM Elements
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const plantsList = document.getElementById('plants-list');
+        const phasePlantSelect = document.getElementById('phase-plant');
+        
+        // Tab Navigation
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tab = button.dataset.tab;
+                
+                // Hide all tabs and remove active class
+                tabContents.forEach(content => content.classList.remove('active'));
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Show selected tab and add active class
+                document.getElementById(`${tab}-tab`).classList.add('active');
+                button.classList.add('active');
+            });
+        });
+        
+        // Camera functionality for Add Plant
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const photo = document.getElementById('photo');
+        const startCameraBtn = document.getElementById('start-camera');
+        const capturePhotoBtn = document.getElementById('capture-photo');
+        const retakePhotoBtn = document.getElementById('retake-photo');
+        let plantPhotoData = null;
+        
+        startCameraBtn.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                video.style.display = 'block';
+                photo.style.display = 'none';
+                startCameraBtn.disabled = true;
+                capturePhotoBtn.disabled = false;
+                retakePhotoBtn.disabled = true;
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                alert('Could not access the camera. Please check permissions.');
+            }
+        });
+        
+        capturePhotoBtn.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            plantPhotoData = canvas.toDataURL('image/jpeg');
+            photo.src = plantPhotoData;
+            
+            video.style.display = 'none';
+            photo.style.display = 'block';
+            
+            capturePhotoBtn.disabled = true;
+            retakePhotoBtn.disabled = false;
+            
+            // Stop camera stream
+            const tracks = video.srcObject.getTracks();
+            tracks.forEach(track => track.stop());
+            video.srcObject = null;
+        });
+        
+        retakePhotoBtn.addEventListener('click', async () => {
+            startCameraBtn.click();
+        });
+        
+        // Camera functionality for Add Phase
+        const phaseVideo = document.getElementById('phase-video');
+        const phaseCanvas = document.getElementById('phase-canvas');
+        const phasePhoto = document.getElementById('phase-photo');
+        const phaseStartCameraBtn = document.getElementById('phase-start-camera');
+        const phaseCapturePhotoBtn = document.getElementById('phase-capture-photo');
+        const phaseRetakePhotoBtn = document.getElementById('phase-retake-photo');
+        let phasePhotoData = null;
+        
+        phaseStartCameraBtn.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                phaseVideo.srcObject = stream;
+                phaseVideo.style.display = 'block';
+                phasePhoto.style.display = 'none';
+                phaseStartCameraBtn.disabled = true;
+                phaseCapturePhotoBtn.disabled = false;
+                phaseRetakePhotoBtn.disabled = true;
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                alert('Could not access the camera. Please check permissions.');
+            }
+        });
+        
+        phaseCapturePhotoBtn.addEventListener('click', () => {
+            const context = phaseCanvas.getContext('2d');
+            phaseCanvas.width = phaseVideo.videoWidth;
+            phaseCanvas.height = phaseVideo.videoHeight;
+            context.drawImage(phaseVideo, 0, 0, phaseCanvas.width, phaseCanvas.height);
+            
+            phasePhotoData = phaseCanvas.toDataURL('image/jpeg');
+            phasePhoto.src = phasePhotoData;
+            
+            phaseVideo.style.display = 'none';
+            phasePhoto.style.display = 'block';
+            
+            phaseCapturePhotoBtn.disabled = true;
+            phaseRetakePhotoBtn.disabled = false;
+            
+            // Stop camera stream
+            const tracks = phaseVideo.srcObject.getTracks();
+            tracks.forEach(track => track.stop());
+            phaseVideo.srcObject = null;
+        });
+        
+        phaseRetakePhotoBtn.addEventListener('click', async () => {
+            phaseStartCameraBtn.click();
+        });
+        
+        // Add Plant Form Handler
+        const addPlantForm = document.getElementById('add-plant-form');
+        
+        addPlantForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const plantName = document.getElementById('plant-name').value;
+            const plantSpecies = document.getElementById('plant-species').value;
+            const plantDescription = document.getElementById('plant-description').value;
+            
+            // Create new plant object
+            const newPlant = {
+                id: Date.now().toString(),
+                name: plantName,
+                species: plantSpecies,
+                description: plantDescription,
+                photo: plantPhotoData,
+                startDate: new Date().toISOString(),
+                phases: []
+            };
+            
+            // Add to plants array and save to local storage
+            plants.push(newPlant);
+            localStorage.setItem('plants', JSON.stringify(plants));
+            
+            // Update UI
+            renderPlants();
+            updatePhasePlantSelect();
+            
+            // Reset form
+            addPlantForm.reset();
+            photo.style.display = 'none';
+            plantPhotoData = null;
+            
+            // Switch to plants tab
+            tabButtons[0].click();
+            
+            alert('Plant added successfully!');
+        });
+        
+        // Add Phase Form Handler
+        const addPhaseForm = document.getElementById('add-phase-form');
+        
+        addPhaseForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const plantId = document.getElementById('phase-plant').value;
+            const phaseName = document.getElementById('phase-name').value;
+            const phaseNotes = document.getElementById('phase-notes').value;
+            
+            // Create new phase object
+            const newPhase = {
+                id: Date.now().toString(),
+                name: phaseName,
+                notes: phaseNotes,
+                photo: phasePhotoData,
+                date: new Date().toISOString()
+            };
+            
+            // Find plant and add phase
+            const plantIndex = plants.findIndex(plant => plant.id === plantId);
+            if (plantIndex !== -1) {
+                plants[plantIndex].phases.push(newPhase);
+                localStorage.setItem('plants', JSON.stringify(plants));
+                
+                // Update UI
+                renderPlants();
+                
+                // Reset form
+                addPhaseForm.reset();
+                phasePhoto.style.display = 'none';
+                phasePhotoData = null;
+                
+                // Switch to plants tab
+                tabButtons[0].click();
+                
+                alert('Growth phase added successfully!');
+            }
+        });
+        
+        // Render Plants List
+        function renderPlants() {
+            plantsList.innerHTML = '';
+            
+            if (plants.length === 0) {
+                plantsList.innerHTML = '<p>No plants added yet. Add your first plant to get started!</p>';
+                return;
+            }
+            
+            plants.forEach(plant => {
+                const plantItem = document.createElement('div');
+                plantItem.className = 'plant-item';
+                
+                const currentPhase = plant.phases.length > 0 ? 
+                    plant.phases[plant.phases.length - 1].name : 'Initial';
+                
+                plantItem.innerHTML = `
+                    <div class="plant-header">
+                        <h3 class="plant-name">${plant.name}</h3>
+                        <span class="phase-badge">Phase: ${currentPhase}</span>
+                    </div>
+                    <p>${plant.species ? plant.species : ''}</p>
+                    <p>Started: ${formatDate(plant.startDate)}</p>
+                    <p>${plant.description ? plant.description : ''}</p>
+                `;
+                
+                if (plant.photo) {
+                    const initialPhoto = document.createElement('div');
+                    initialPhoto.className = 'phase-entry';
+                    initialPhoto.innerHTML = `
+                        <img src="${plant.photo}" class="phase-image" alt="Initial photo">
+                        <div class="phase-details">
+                            <h4>Initial State</h4>
+                            <p class="phase-date">${formatDate(plant.startDate)}</p>
+                        </div>
+                    `;
+                    plantItem.appendChild(initialPhoto);
+                }
+                
+                // Display phases
+                if (plant.phases.length > 0) {
+                    const phasesTitle = document.createElement('h4');
+                    phasesTitle.textContent = 'Growth Phases';
+                    phasesTitle.style.marginTop = '1rem';
+                    plantItem.appendChild(phasesTitle);
+                    
+                    plant.phases.forEach(phase => {
+                        const phaseEntry = document.createElement('div');
+                        phaseEntry.className = 'phase-entry';
+                        
+                        phaseEntry.innerHTML = `
+                            ${phase.photo ? `<img src="${phase.photo}" class="phase-image" alt="${phase.name}">` : ''}
+                            <div class="phase-details">
+                                <h4>${phase.name}</h4>
+                                <p class="phase-date">${formatDate(phase.date)}</p>
+                                <p>${phase.notes}</p>
+                            </div>
+                        `;
+                        
+                        plantItem.appendChild(phaseEntry);
+                    });
+                }
+                
+                plantsList.appendChild(plantItem);
+            });
+        }
+        
+        // Update Plant Select in Add Phase Form
+        function updatePhasePlantSelect() {
+            phasePlantSelect.innerHTML = '<option value="">-- Select a plant --</option>';
+            
+            plants.forEach(plant => {
+                const option = document.createElement('option');
+                option.value = plant.id;
+                option.textContent = plant.name;
+                phasePlantSelect.appendChild(option);
+            });
+        }
+        
+        // Helper function to format dates
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+        
+        // Initialize
+        renderPlants();
+        updatePhasePlantSelect();
+        
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
