@@ -62,6 +62,7 @@ function openDeleteModal(type, id, parentId = null) {
 }
 
 // Render Plants List
+// Render Plants List - Updated to fix UI overlap
 function renderPlants() {
     const plantsList = document.getElementById('plants-list');
     plantsList.innerHTML = '';
@@ -78,15 +79,20 @@ function renderPlants() {
         const currentPhase = plant.phases.length > 0 ? 
             plant.phases[plant.phases.length - 1].name : 'Initial';
         
+        // Modified structure to prevent overlap
         plantItem.innerHTML = `
-            <div class="edit-buttons">
-                <button class="btn btn-small" onclick="openEditPlantModal('${plant.id}')">Edit</button>
-                <button class="btn btn-small btn-warning" onclick="openDeleteModal('plant', '${plant.id}')">Delete</button>
-            </div>
             <div class="plant-header">
                 <h3 class="plant-name">${plant.name}</h3>
-                <span class="phase-badge">Phase: ${currentPhase}</span>
             </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span class="phase-badge">Phase: ${currentPhase}</span>
+                <div class="edit-buttons">
+                    <button class="btn btn-small" onclick="openEditPlantModal('${plant.id}')">Edit</button>
+                    <button class="btn btn-small btn-warning" onclick="openDeleteModal('plant', '${plant.id}')">Delete</button>
+                </div>
+            </div>
+            
             <p>${plant.species ? plant.species : ''}</p>
             <p>Started: ${formatDate(plant.startDate)}</p>
             <p>${plant.description ? plant.description : ''}</p>
