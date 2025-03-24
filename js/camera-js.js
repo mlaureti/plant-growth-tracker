@@ -9,7 +9,14 @@ let plantPhotoData = null;
 
 startCameraBtn.addEventListener('click', async () => {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        // Specify we want the environment-facing (back) camera
+        const constraints = {
+            video: {
+                facingMode: { exact: "environment" }
+            }
+        };
+        
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = stream;
         video.style.display = 'block';
         photo.style.display = 'none';
@@ -17,11 +24,24 @@ startCameraBtn.addEventListener('click', async () => {
         capturePhotoBtn.disabled = false;
         retakePhotoBtn.disabled = true;
     } catch (err) {
-        console.error('Error accessing camera:', err);
-        alert('Could not access the camera. Please check permissions.');
+        console.error('Error accessing back camera:', err);
+        // Fallback to any available camera if back camera isn't available
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            video.style.display = 'block';
+            photo.style.display = 'none';
+            startCameraBtn.disabled = true;
+            capturePhotoBtn.disabled = false;
+            retakePhotoBtn.disabled = true;
+        } catch (fallbackErr) {
+            console.error('Error accessing any camera:', fallbackErr);
+            alert('Could not access the camera. Please check permissions.');
+        }
     }
 });
 
+// Rest of the code for this camera section remains the same
 capturePhotoBtn.addEventListener('click', () => {
     const context = canvas.getContext('2d');
     canvas.width = video.videoWidth;
@@ -47,7 +67,7 @@ retakePhotoBtn.addEventListener('click', async () => {
     startCameraBtn.click();
 });
 
-// Camera functionality for Add Phase
+// Camera functionality for Add Phase - apply the same changes here
 const phaseVideo = document.getElementById('phase-video');
 const phaseCanvas = document.getElementById('phase-canvas');
 const phasePhoto = document.getElementById('phase-photo');
@@ -58,7 +78,14 @@ let phasePhotoData = null;
 
 phaseStartCameraBtn.addEventListener('click', async () => {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        // Specify we want the environment-facing (back) camera
+        const constraints = {
+            video: {
+                facingMode: { exact: "environment" }
+            }
+        };
+        
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
         phaseVideo.srcObject = stream;
         phaseVideo.style.display = 'block';
         phasePhoto.style.display = 'none';
@@ -66,11 +93,24 @@ phaseStartCameraBtn.addEventListener('click', async () => {
         phaseCapturePhotoBtn.disabled = false;
         phaseRetakePhotoBtn.disabled = true;
     } catch (err) {
-        console.error('Error accessing camera:', err);
-        alert('Could not access the camera. Please check permissions.');
+        console.error('Error accessing back camera:', err);
+        // Fallback to any available camera if back camera isn't available
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            phaseVideo.srcObject = stream;
+            phaseVideo.style.display = 'block';
+            phasePhoto.style.display = 'none';
+            phaseStartCameraBtn.disabled = true;
+            phaseCapturePhotoBtn.disabled = false;
+            phaseRetakePhotoBtn.disabled = true;
+        } catch (fallbackErr) {
+            console.error('Error accessing any camera:', fallbackErr);
+            alert('Could not access the camera. Please check permissions.');
+        }
     }
 });
 
+// Rest of the phase camera code remains the same
 phaseCapturePhotoBtn.addEventListener('click', () => {
     const context = phaseCanvas.getContext('2d');
     phaseCanvas.width = phaseVideo.videoWidth;
@@ -96,7 +136,7 @@ phaseRetakePhotoBtn.addEventListener('click', async () => {
     phaseStartCameraBtn.click();
 });
 
-// Camera functionality for Edit Plant
+// Camera functionality for Edit Plant - apply the same changes here too
 const editVideo = document.getElementById('edit-video');
 const editCanvas = document.getElementById('edit-canvas');
 const editPhoto = document.getElementById('edit-photo');
@@ -106,7 +146,14 @@ const editRetakePhotoBtn = document.getElementById('edit-retake-photo');
 
 editStartCameraBtn.addEventListener('click', async () => {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        // Specify we want the environment-facing (back) camera
+        const constraints = {
+            video: {
+                facingMode: { exact: "environment" }
+            }
+        };
+        
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
         editVideo.srcObject = stream;
         editVideo.style.display = 'block';
         editPhoto.style.display = 'none';
@@ -114,11 +161,24 @@ editStartCameraBtn.addEventListener('click', async () => {
         editCapturePhotoBtn.disabled = false;
         editRetakePhotoBtn.disabled = true;
     } catch (err) {
-        console.error('Error accessing camera:', err);
-        alert('Could not access the camera. Please check permissions.');
+        console.error('Error accessing back camera:', err);
+        // Fallback to any available camera if back camera isn't available
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            editVideo.srcObject = stream;
+            editVideo.style.display = 'block';
+            editPhoto.style.display = 'none';
+            editStartCameraBtn.disabled = true;
+            editCapturePhotoBtn.disabled = false;
+            editRetakePhotoBtn.disabled = true;
+        } catch (fallbackErr) {
+            console.error('Error accessing any camera:', fallbackErr);
+            alert('Could not access the camera. Please check permissions.');
+        }
     }
 });
 
+// Rest of edit camera code remains the same
 editCapturePhotoBtn.addEventListener('click', () => {
     const context = editCanvas.getContext('2d');
     editCanvas.width = editVideo.videoWidth;
@@ -144,7 +204,7 @@ editRetakePhotoBtn.addEventListener('click', async () => {
     editStartCameraBtn.click();
 });
 
-// Camera functionality for Edit Phase
+// Camera functionality for Edit Phase - apply the same changes here too
 const editPhaseVideo = document.getElementById('edit-phase-video');
 const editPhaseCanvas = document.getElementById('edit-phase-canvas');
 const editPhasePhoto = document.getElementById('edit-phase-photo');
@@ -154,7 +214,14 @@ const editPhaseRetakePhotoBtn = document.getElementById('edit-phase-retake-photo
 
 editPhaseStartCameraBtn.addEventListener('click', async () => {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        // Specify we want the environment-facing (back) camera
+        const constraints = {
+            video: {
+                facingMode: { exact: "environment" }
+            }
+        };
+        
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
         editPhaseVideo.srcObject = stream;
         editPhaseVideo.style.display = 'block';
         editPhasePhoto.style.display = 'none';
@@ -162,11 +229,24 @@ editPhaseStartCameraBtn.addEventListener('click', async () => {
         editPhaseCapturePhotoBtn.disabled = false;
         editPhaseRetakePhotoBtn.disabled = true;
     } catch (err) {
-        console.error('Error accessing camera:', err);
-        alert('Could not access the camera. Please check permissions.');
+        console.error('Error accessing back camera:', err);
+        // Fallback to any available camera if back camera isn't available
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            editPhaseVideo.srcObject = stream;
+            editPhaseVideo.style.display = 'block';
+            editPhasePhoto.style.display = 'none';
+            editPhaseStartCameraBtn.disabled = true;
+            editPhaseCapturePhotoBtn.disabled = false;
+            editPhaseRetakePhotoBtn.disabled = true;
+        } catch (fallbackErr) {
+            console.error('Error accessing any camera:', fallbackErr);
+            alert('Could not access the camera. Please check permissions.');
+        }
     }
 });
 
+// Rest of edit phase camera code remains the same
 editPhaseCapturePhotoBtn.addEventListener('click', () => {
     const context = editPhaseCanvas.getContext('2d');
     editPhaseCanvas.width = editPhaseVideo.videoWidth;
