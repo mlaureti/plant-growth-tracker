@@ -62,6 +62,51 @@ if (typeof openDeleteModal === 'undefined') {
 
 // Initialize
 // Make sure these functions are defined in respective files
+
+// Function to export all plant data
+function exportAllData() {
+    const plantsData = localStorage.getItem('plants');
+
+    if (!plantsData) {
+        console.log('No plant data found to export.');
+        // Optionally, show an alert to the user
+        // alert('No plant data available to export.');
+        return;
+    }
+
+    try {
+        const jsonData = JSON.stringify(JSON.parse(plantsData), null, 2);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'plant_data.json';
+        document.body.appendChild(a); // Append anchor to body to ensure it's clickable
+        a.click();
+        
+        document.body.removeChild(a); // Clean up by removing the anchor
+        URL.revokeObjectURL(url); // Free up the object URL
+
+        console.log('Plant data exported successfully.');
+
+    } catch (error) {
+        console.error('Error exporting plant data:', error);
+        // Optionally, show an alert to the user
+        // alert('An error occurred while exporting data.');
+    }
+}
+
+// Event listener for the export button
+document.addEventListener('DOMContentLoaded', () => {
+    const exportButton = document.getElementById('export-all-btn');
+    if (exportButton) {
+        exportButton.addEventListener('click', exportAllData);
+    } else {
+        console.error('Export button not found.');
+    }
+});
+
 if (typeof renderPlants === 'function') {
     renderPlants();
 }
